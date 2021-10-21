@@ -1,0 +1,26 @@
+name: Download iTMSTransporter components
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download iTMSTransporter components
+        run: /Applications/Xcode.app/Contents/SharedFrameworks/ContentDeliveryServices.framework/itms/bin/iTMSTransporter
+        
+      - name: 'Tar & Gzip com.apple.amp.itmstransporter'
+        run: tar -czvf com.apple.amp.itmstransporter.tar.gz -C ~/Library/Caches ./com.apple.amp.itmstransporter/
+    
+      - uses: actions/upload-artifact@v2
+        name: Upload to artifact
+        with:
+          name: com.apple.amp.itmstransporter.tar.gz
+          path: com.apple.amp.itmstransporter.tar.gz
+          retention-days: 3
