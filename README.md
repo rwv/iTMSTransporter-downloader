@@ -13,7 +13,7 @@
 ## 使用方式
 
 ``` bash
-python download.py
+python3 download.py
 ```
 
 ## 手动下载依赖包
