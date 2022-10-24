@@ -35,7 +35,26 @@ def unzip_untar_file(filename, output_dir):
     with zipfile.ZipFile(filename) as zf:
         zf.extract(member=ARTIFACT_FILENAME, path=temp_folder.name)
     with tarfile.open(os.path.join(temp_folder.name, ARTIFACT_FILENAME), mode="r:gz") as tf:
-        tf.extractall(output_dir)
+        def is_within_directory(directory, target):
+            
+            abs_directory = os.path.abspath(directory)
+            abs_target = os.path.abspath(target)
+        
+            prefix = os.path.commonprefix([abs_directory, abs_target])
+            
+            return prefix == abs_directory
+        
+        def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+        
+            for member in tar.getmembers():
+                member_path = os.path.join(path, member.name)
+                if not is_within_directory(path, member_path):
+                    raise Exception("Attempted Path Traversal in Tar File")
+        
+            tar.extractall(path, members, numeric_owner=numeric_owner) 
+            
+        
+        safe_extract(tf, output_dir)
 
 def change_owner(path, owner):
     print(f"Change file owner to local user {owner}")
